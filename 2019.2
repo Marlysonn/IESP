@@ -27,7 +27,7 @@ typedef struct cliente
 	int id;
 	char nome[MAX];
 	int fone[11];
-} t_cliente;
+}t_cliente;
 
 typedef struct chamado
 {
@@ -54,7 +54,7 @@ void iniciar(); //Digitar login e senha
 char MenuADM(); // Menu do Administrador
 char MenuUSER(); // Menu do Cliente
 char Menu_chamado();
-void Cadastro_cliente();
+int Cadastro_cliente();
 void pesquisar_cliente();
 void listar_clientes();
 //void listar_chamados();
@@ -273,8 +273,48 @@ char Menu_chamado(){
 
 }
 
+int Cadastro_cliente(cadastro_cliente){
+    fseek(stdin, 0, SEEK_END);
 
+    setlocale(LC_ALL,"PORTUGUESE");
+	FILE *arq_clientes = fopen("clientes.bin", "a+b");
 
+	if(arq_clientes == NULL)
+    {
+		printf("\nFalha ao Abrir o Arquivo!!!");
+		exit(1);
+	}
+	int cont_bytes = 0;
+	fseek(arq_clientes, 0, SEEK_END);
+	cont_bytes = ftell(arq_clientes);
+	t_cliente cliente;
+	if(cont_bytes == 0)
+    {
+		cliente.id = 1;
+    }
+	else
+	{
+		t_cliente ultimo_cliente;
+		fseek(arq_clientes, cont_bytes - sizeof(t_cliente), SEEK_SET);
+		fread(&ultimo_cliente, sizeof(t_cliente), 1, arq_clientes);
+		cliente.id = ultimo_cliente.id + 1;
+	}
+	printf("\nCliente.: ");
+	scanf("%99[^\n]%*c", cliente.nome);
+	printf("\nFone.: ");
+	scanf("%99[^\n]%*c", cliente.fone);
+
+	fseek(stdin, 0, SEEK_END);
+	//Se o ponteiro nao estiver no final do arquivo, nada é escrito
+	fseek(arq_clientes, 0, SEEK_END);
+	fwrite(&cliente, sizeof(t_cliente), 1, arq_clientes);
+	fclose(arq_clientes);
+	printf("\nCliente \"%s\" cadastrado com sucesso!\n", cliente.nome);
+	printf("\nPressione <ENTER> para continuar...");
+	scanf("%*c");
+	fseek(stdin, 0, SEEK_END);
+	MenuADM();
+}
 
 t_cliente *obter_cliente(FILE *arq_clientes, int id_cliente){
 
@@ -355,46 +395,11 @@ void cadastro_chamado(){
 	MenuUSER();
 }
 */
-void Cadastro_cliente(){
-    setlocale(LC_ALL,"PORTUGUESE");
-	FILE *arq_clientes = fopen("clientes.bin", "a+b");
 
-	if(arq_clientes == NULL)
-    {
-		printf("\nFalha ao Abrir o Arquivo!!!");
-		exit(1);
-	}
-	int cont_bytes = 0;
-	fseek(arq_clientes, 0, SEEK_END);
-	cont_bytes = ftell(arq_clientes);
-	t_cliente cliente;
-	if(cont_bytes == 0)
-    {
-		cliente.id = 1;
-    }
-	else
-	{
-		t_cliente ultimo_cliente;
-		fseek(arq_clientes, cont_bytes - sizeof(t_cliente), SEEK_SET);
-		fread(&ultimo_cliente, sizeof(t_cliente), 1, arq_clientes);
-		cliente.id = ultimo_cliente.id + 1;
-	}
-	printf("\nCliente.: ");
-	scanf("%99[^\n]%*c", cliente.nome);
-	printf("\nFone.: ");
-	scanf("%99[^\n]%*c", cliente.fone);
 
-	fseek(stdin, 0, SEEK_END);
-	//Se o ponteiro nao estiver no final do arquivo, nada é escrito
-	fseek(arq_clientes, 0, SEEK_END);
-	fwrite(&cliente, sizeof(t_cliente), 1, arq_clientes);
-	fclose(arq_clientes);
-	printf("\nCliente \"%s\" cadastrado com sucesso!\n", cliente.nome);
-	printf("\nPressione <ENTER> para continuar...");
-	scanf("%*c");
-	fseek(stdin, 0, SEEK_END);
-	MenuADM();
-}
+
+
+
 /*
 void pesquisar_cliente(){
 	char nome[MAX];
