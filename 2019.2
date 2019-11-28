@@ -1,0 +1,475 @@
+#ifdef __WIN32
+#define limpar_tela "cls"
+#else
+#define limpar_tela "clear"
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+#include <string.h>
+#include <locale.h>
+#include <windows.h>
+#include <time.h>
+
+#define MAX 300
+#define LOGIN 20
+#define SENHA 20
+
+void hora(){
+    time_t tictoc;
+    time(&tictoc);
+    printf("A hora certa: %s\n",ctime(&tictoc));
+}
+
+typedef struct cliente
+{
+	int id;
+	char nome[MAX];
+	int fone[11];
+} t_cliente;
+
+typedef struct chamado
+{
+    int id;
+    int id_cliente;
+    char titulo;
+    char descricao;
+    char cliente;
+    char status;
+    char tipo;
+    char data;
+    char autor;
+}t_chamado;
+
+//t_chamado chamado; //variavel global da struct
+//t_cliente cliente; //variavel global da struct
+
+
+char login[30];
+char senha[30];
+
+
+void iniciar(); //Digitar login e senha
+char MenuADM(); // Menu do Administrador
+char MenuUSER(); // Menu do Cliente
+char Menu_chamado();
+void Cadastro_cliente();
+void pesquisar_cliente();
+void listar_clientes();
+//void listar_chamados();
+void cadastro_chamado();
+//t_cliente *obter_cliente(FILE *arq_clientes, int id_cliente);
+
+int main()
+{
+    setlocale(LC_ALL,"Portuguese");
+    system("color 9F");
+	int a = 1;
+    int resp;
+    system(limpar_tela);
+    system("title HELPDESK - JAMPA.COM");
+	puts("#-----------------HELPDESK - JAMPA.COM------------------#\n");
+	puts("#--------------------- MENU LOGIN ----------------------#\n");
+	puts("# 1 - LOGIN\t\t\t\t\t\t#");
+	puts("# 0 - SAIR\t\t\t\t\t\t#\n");
+	puts("#-------------------------------------------------------#");
+    fflush(stdin);
+    scanf("%d",&resp);
+    while(a){
+		if(resp == 1){
+            a-=1;
+            iniciar();
+		}
+        else if(resp == 0)
+		{
+		    puts("ATÉ LOGO!!!");
+			exit(1);
+		}
+		else
+		{
+			puts("Comando Invalido!!!");
+            system("pause");
+            main();
+		}
+	}
+
+}
+
+void iniciar()
+{
+    system(limpar_tela);
+    system("title HELPDESK - JAMPA.COM");
+    puts("#-----------------HELPDESK - JAMPA.COM------------------#\n");
+    puts("#--------------------- MENU LOGIN ----------------------#\n");
+    puts("#LOGIN: \t\t\t\t\t\t#");
+    puts("#SENHA: \t\t\t\t\t\t#");
+    puts("#Digite 0 Para Sair: \t\t\t\t\t#\n");
+    puts("#-------------------------------------------------------#");
+    fflush(stdin);
+    puts("Digite seu Usuario.: ");
+    scanf("%s", &login);
+    fflush(stdin);
+    puts("Digite sua Senha.: ");
+    scanf("%s", &senha);
+    system(limpar_tela);
+
+    if((strcmp(login,"admin") == 0) && (strcmp(senha,"admin") == 0 ))
+    {
+        system("title HELPDESK - JAMPA.COM - MODO ADMINISTRADOR");
+        puts("[LOGADO COMO ADMINISTRADOR");
+        MenuADM();
+    }
+    else if ((strcmp(login,"user") == 0) && (strcmp(senha,"user") == 0 ))
+    {
+        system("title HELPDESK - JAMPA.COM - MODO USUARIO");
+        puts("LOGADO COMO USUARIO");
+        MenuUSER();
+    }
+    else if ((strcmp(login,"0") == 0))
+    {
+        main();
+    }
+    else
+    {
+        puts("Comando Invalido!!!");
+		iniciar();
+    }
+}
+
+char MenuADM()
+{
+	system(limpar_tela);
+	int opcAdm;
+	int a=1;
+    system("title HELPDESK - JAMPA.COM - MODULO ADMINISTRADOR");
+	puts("#-----------------HELPDESK - JAMPA.COM------------------#\n");
+	puts("#--------------------MENU PRINCIPAL---------------------#\n");
+	puts("# 1 - Cadastro De Clientes\t\t\t\t#");
+	puts("# 2 - Listar Todos Os Chamados\t\t\t\t#");
+	puts("# 3 - Listar Todos Os Cliente\t\t\t\t#");
+	puts("# 4 - Pesquisar Chamado\t\t\t\t\t#");
+	puts("# 5 - Pesquisar Cliente\t\t\t\t\t#");
+	puts("# 6 - Encerrar Chamado\t\t\t\t\t#");
+	puts("# 0 - Sair\t\t\t\t\t\t#\n");
+	puts("#-------------------------------------------------------#");
+	puts("\nDigite uma opção.: ");
+	scanf("%i",&opcAdm);
+    while(a){
+		if(opcAdm == 1){
+            a-=1;
+			Cadastro_cliente();
+        }
+        else if(opcAdm == 2){
+			a-=1;
+            //listar_chamados();
+        }
+        else if(opcAdm == 3){
+			a-=1;
+            //listar_clientes();
+        }
+        else if(opcAdm == 4){
+			a-=1;
+            //pesquisar_chamado();
+        }
+        else if(opcAdm == 5){
+			a-=1;
+            //pesquisar_cliente();
+        }
+        else if(opcAdm == 6){
+			a-=1;
+            //encerrar_chamado();
+        }
+        else if(opcAdm == 0){
+            main();
+        }
+        else
+        {
+            puts("Comando Invalido!!!");
+            system("pause");
+			MenuADM();
+        }
+	}
+}
+
+char MenuUSER()
+{
+	system(limpar_tela);
+	int opcUser;
+	int a=1;
+	system("title HELPDESK - JAMPA.COM - MODULO USUARIO");
+	puts("#-----------------HELPDESK - JAMPA.COM------------------#\n");
+	puts("#--------------------MENU CHAMADOS----------------------#\n");
+	puts("# 1 - Cadastro de Chamado\t\t\t\t#");
+	puts("# 2 - Ver Andamento Chamado\t\t\t\t#");
+	puts("# 3 - Menu de Mensagens\t\t\t\t\t#");
+	puts("# 0 - Sair\t\t\t\t\t\t#\n");
+	puts("#-------------------------------------------------------#\n");
+	puts("Digite a opção.:");
+	fflush(stdin);
+	scanf("%i",&opcUser);
+	while (a)
+	{
+		if(opcUser == 1){
+            a-=1;
+            Menu_chamado();
+			//Cadastro de Chamado
+        }
+        else if(opcUser == 2){
+			a-=1;
+            //Ver Andamento de Chamado
+        }
+        else if(opcUser == 3){
+            a-=1;
+            //Ver troca de Mensagens
+        }
+        else if(opcUser == 0){
+            a-=1;
+            main();
+        }
+	    else{
+            puts("Comando Invalido!!!");
+            system("pause");
+			MenuUSER();
+        }
+	}
+
+}
+
+char Menu_chamado(){
+    system(limpar_tela);
+	int opcMchamado;
+	int a=1;
+	system("title HELPDESK - JAMPA.COM - MODULO USUARIO");
+	puts("#-----------------HELPDESK - JAMPA.COM------------------#\n");
+	puts("#--------------------MENU CHAMADOS----------------------#\n");
+	puts("# 1 - Cadastrar Chamado Rede\t\t\t\t#");
+	puts("# 2 - Cadastrar Chamado Internet\t\t\t#");
+	puts("# 0 - Menu Principal\t\t\t\t\t#\n");
+	puts("#-------------------------------------------------------#\n");
+    puts("Digite a opção.:");
+	fflush(stdin);
+	scanf("%i",&opcMchamado);
+	while (a)
+	{
+		if(opcMchamado == 1){
+            a-=1;
+			//Cadastrar Chamado de Rede
+        }
+        else if(opcMchamado == 2){
+			a-=1;
+            //Cadastrar Chamado Internet
+        }
+        else if(opcMchamado == 0){
+            a-=1;
+            MenuUSER();
+        }
+	    else{
+            puts("Comando Invalido!!!");
+            system("pause");
+			MenuUSER();
+        }
+	}
+
+}
+
+
+
+
+t_cliente *obter_cliente(FILE *arq_clientes, int id_cliente){
+
+	rewind(arq_clientes);
+	t_cliente *cliente;
+
+	cliente = (t_cliente *)malloc(sizeof(t_cliente));
+
+	while(1){
+		size_t result = fread(cliente, sizeof(t_cliente), 1, arq_clientes);
+		if(result == 0){
+			free(cliente);
+			return NULL;
+		}
+		if(cliente->id == id_cliente)
+			exit(1);
+	}
+
+	return cliente;
+}
+
+/*
+void cadastar_chamado()
+{
+    FILE *A_chamados.bin = fopen("A_chamados.bin", "a");
+    if(arq_A_chamados == NULL)
+    {
+        puts("Falha ao abrir o arquivo");
+        MenuUSER();
+
+
+    }
+    else if()
+}
+
+
+void cadastro_chamado(){
+    setlocale(LC_ALL,"PORTUGUESE");
+	FILE *arq_A_chamados = fopen("A_chamados.bin", "a+b");
+
+	if(arq_A_chamados == NULL)
+    {
+		printf("\nFalha ao Abrir o Arquivo!!!");
+		exit(1);
+	}
+	int cont_bytes = 0;
+	fseek(arq_A_chamados, 0, SEEK_END);
+	cont_bytes = ftell(arq_A_chamados);
+	t_chamado chamado;
+	if(cont_bytes == 0)
+    {
+		chamado.id = 1;
+    }
+	else
+	{
+		t_chamado ultimo_chamado;
+		fseek(arq_A_chamados, cont_bytes - sizeof(t_chamado), SEEK_SET);
+		fread(&ultimo_chamado, sizeof(t_chamado), 1, arq_A_chamados);
+		chamado.id = ultimo_chamado.id + 1;
+	}
+	puts("Titulo.: ");
+	scanf("%99[^\n]%*c", chamado.titulo);
+	puts("Descrição.: ");
+	scanf("%99[^\n]%*c", chamado.descricao);
+	puts("Autor.: ");
+	scanf("%99[^\n]%*c", chamado.autor);
+
+
+	fseek(stdin, 0, SEEK_END);
+	//Se o ponteiro nao estiver no final do arquivo, nada é escrito
+	fseek(arq_A_chamados, 0, SEEK_END);
+	fwrite(&chamado, sizeof(t_chamado), 1, arq_A_chamados);
+	fclose(arq_A_chamados);
+	printf("\nCliente \"%s\" cadastrado com sucesso!\n", chamado.autor);
+	printf("\nPressione <ENTER> para continuar...");
+	scanf("%*c");
+	fseek(stdin, 0, SEEK_END);
+	MenuUSER();
+}
+*/
+void Cadastro_cliente(){
+    setlocale(LC_ALL,"PORTUGUESE");
+	FILE *arq_clientes = fopen("clientes.bin", "a+b");
+
+	if(arq_clientes == NULL)
+    {
+		printf("\nFalha ao Abrir o Arquivo!!!");
+		exit(1);
+	}
+	int cont_bytes = 0;
+	fseek(arq_clientes, 0, SEEK_END);
+	cont_bytes = ftell(arq_clientes);
+	t_cliente cliente;
+	if(cont_bytes == 0)
+    {
+		cliente.id = 1;
+    }
+	else
+	{
+		t_cliente ultimo_cliente;
+		fseek(arq_clientes, cont_bytes - sizeof(t_cliente), SEEK_SET);
+		fread(&ultimo_cliente, sizeof(t_cliente), 1, arq_clientes);
+		cliente.id = ultimo_cliente.id + 1;
+	}
+	printf("\nCliente.: ");
+	scanf("%99[^\n]%*c", cliente.nome);
+	printf("\nFone.: ");
+	scanf("%99[^\n]%*c", cliente.fone);
+
+	fseek(stdin, 0, SEEK_END);
+	//Se o ponteiro nao estiver no final do arquivo, nada é escrito
+	fseek(arq_clientes, 0, SEEK_END);
+	fwrite(&cliente, sizeof(t_cliente), 1, arq_clientes);
+	fclose(arq_clientes);
+	printf("\nCliente \"%s\" cadastrado com sucesso!\n", cliente.nome);
+	printf("\nPressione <ENTER> para continuar...");
+	scanf("%*c");
+	fseek(stdin, 0, SEEK_END);
+	MenuADM();
+}
+/*
+void pesquisar_cliente(){
+	char nome[MAX];
+	int encontrou_cliente = 0;
+
+	FILE *arq_clientes = fopen("clientes.bin", "rb");
+
+	if(arq_clientes == NULL){
+		printf("|nFalha ao abrir o arquivo...\n");
+		exit(1); //Aborta programa
+	}
+	printf("\nDigite o nome do Cliente: ");
+	scanf("%99[^\n]%*c", nome);
+
+	printf("\nCliente com nome \"%s\":\n\n",nome);
+
+	t_cliente cliente;
+
+	while(1){
+		size_t result = fread(&cliente, sizeof(t_cliente), 1, arq_clientes);
+
+		if(result == 0){
+			exit(1);
+		}
+		char nome_aux[MAX];
+
+		strcpy(nome_aux, cliente.nome);
+
+		//if(strcmp(strupr(nome_aux), strupr(nome))== 0){ //Inplementacao original
+			//Mostra dados do cliente
+		  if(strstr(strupr(nome_aux), strupr(nome))){
+			printf("ID do cliente: %d\n", cliente.id);
+			printf("Nome: %s\n\n", cliente.nome);
+			encontrou_cliente = 1;
+		  }
+		//}
+	}
+	if(encontrou_cliente == 0)
+			puts("\nNenhum cliente encontrado...\n\n");
+	fclose(arq_clientes);
+	printf("Pressione <ENTER> para continuar...");
+	scanf("%*c");
+	fseek(stdin, 0, SEEK_END);
+	MenuADM();
+}
+
+void listar_clientes(){
+	int encontrou_cliente = 0;
+	FILE *arq_clientes = fopen("clientes.bin", "rb");
+
+	if(arq_clientes == NULL){
+		printf("\nFalha ao abrir o arquivo");
+		printf("Pressione <ENTER> para continuar...");
+		scanf("%*c");
+		fseek(stdin, 0, SEEK_END);
+		return;
+	}
+	t_cliente cliente;
+	while(1){
+		size_t result = fread(&cliente, sizeof(cliente), 1, arq_clientes);
+		if(result == 0){
+			exit(1);
+		}
+		encontrou_cliente = 1;
+		printf("\nID do cliente: %d", cliente.id);
+		printf("\nNome do cliente: %s", cliente.nome);
+	}
+	if(encontrou_cliente == 0){
+		printf("\nNenhum cliente cadastrado...");
+	}
+	fclose(arq_clientes);
+	printf("\nPressione <ENTER> para continuar...");
+	scanf("%*c");
+	fseek(stdin, 0, SEEK_END);
+	MenuADM();
+
+}
+*/
